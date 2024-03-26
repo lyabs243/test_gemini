@@ -42,20 +42,20 @@ Your file should look like this:
 
 ![VS Code launch.json](./screenshots/vs-code-configs.png)
 
-## Features
+## Use cases
 
-### [x] Generate text from text-only input
+### Generate text from text-only input
 
 ![Text-only input](./screenshots/gemini-text-input-only-en.gif)
 
-### [] Generate text from text-and-image input (multimodal)
+### Generate text from text-and-image input (multimodal)
+
+![Text-and-image input](./screenshots/gemini-text-image-input-en.gif)
+
+### Build multi-turn conversations (chat)
 
 In progress...
 
-### [] Build multi-turn conversations (chat)
-
-In progress...
-
-### [] Use streaming for faster interactions
+### Use streaming for faster interactions
 
 In progress...

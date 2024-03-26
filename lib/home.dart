@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:test_gemini/text_image_input.dart';
 import 'package:test_gemini/text_only_input.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -49,6 +50,8 @@ class _MyHomePageState extends State<MyHomePage> {
             const SizedBox(height: 20,),
             ElevatedButton(
               onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(builder: (context)
+                  => const TextImageInput()));
               },
               child: const Text('Generate text from text-and-image input (multimodal)'),
             ),
