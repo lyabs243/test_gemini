@@ -1,5 +1,6 @@
 import 'package:chat_bubbles/bubbles/bubble_special_three.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:lottie/lottie.dart';
 
@@ -25,7 +26,7 @@ class MultiTurnConversationState extends State<MultiTurnConversation> {
     final model = GenerativeModel(
       model: 'gemini-pro',
       apiKey: apiKey,
-      generationConfig: GenerationConfig(maxOutputTokens: 100)
+      generationConfig: GenerationConfig(maxOutputTokens: 5000)
     );
 
     messages = [
@@ -140,7 +141,7 @@ class MultiTurnConversationState extends State<MultiTurnConversation> {
   Widget getBubble(String text, bool isSender,) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
-      child: BubbleSpecialThree(
+      child: CustomBubbleSpecialThree(
         text: text,
         color: (isSender)? Theme.of(context).colorScheme.primary: Theme.of(context).colorScheme.secondary.withOpacity(0.8),
         constraints: BoxConstraints(
@@ -183,4 +184,118 @@ class MessageItem {
     return Content.model([TextPart(text)]);
   }
 
+}
+
+class CustomBubbleSpecialThree extends StatelessWidget {
+  final bool isSender;
+  final String text;
+  final bool tail;
+  final Color color;
+  final bool sent;
+  final bool delivered;
+  final bool seen;
+  final TextStyle textStyle;
+  final BoxConstraints? constraints;
+
+  const CustomBubbleSpecialThree({
+    super.key,
+    this.isSender = true,
+    this.constraints,
+    required this.text,
+    this.color = Colors.white70,
+    this.tail = true,
+    this.sent = false,
+    this.delivered = false,
+    this.seen = false,
+    this.textStyle = const TextStyle(
+      color: Colors.black87,
+      fontSize: 16,
+    ),
+  });
+
+  ///chat bubble builder method
+  @override
+  Widget build(BuildContext context) {
+    bool stateTick = false;
+    Icon? stateIcon;
+    if (sent) {
+      stateTick = true;
+      stateIcon = const Icon(
+        Icons.done,
+        size: 18,
+        color: Color(0xFF97AD8E),
+      );
+    }
+    if (delivered) {
+      stateTick = true;
+      stateIcon = const Icon(
+        Icons.done_all,
+        size: 18,
+        color: Color(0xFF97AD8E),
+      );
+    }
+    if (seen) {
+      stateTick = true;
+      stateIcon = const Icon(
+        Icons.done_all,
+        size: 18,
+        color: Color(0xFF92DEDA),
+      );
+    }
+
+    return Align(
+      alignment: isSender ? Alignment.topRight : Alignment.topLeft,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+        child: CustomPaint(
+          painter: SpecialChatBubbleThree(
+              color: color,
+              alignment: isSender ? Alignment.topRight : Alignment.topLeft,
+              tail: tail),
+          child: Container(
+            constraints: constraints ??
+                BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * .7,
+                ),
+            margin: isSender
+                ? stateTick
+                ? const EdgeInsets.fromLTRB(7, 7, 14, 7)
+                : const EdgeInsets.fromLTRB(7, 7, 17, 7)
+                : const EdgeInsets.fromLTRB(17, 7, 7, 7),
+            child: Stack(
+              children: <Widget>[
+                Padding(
+                  padding: stateTick
+                      ? const EdgeInsets.only(left: 4, right: 20)
+                      : const EdgeInsets.only(left: 4, right: 4),
+                  child: MarkdownBody(
+                    data: text,
+                    onTapLink: (text, href, title) {
+                      // open link
+                    },
+                    styleSheet: MarkdownStyleSheet(
+                      p: textStyle,
+                      a: textStyle.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      textAlign: WrapAlignment.start,
+                    ),
+                  ),
+                ),
+                stateIcon != null && stateTick
+                    ? Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: stateIcon,
+                )
+                    : const SizedBox(
+                  width: 1,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

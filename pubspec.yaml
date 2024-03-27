@@ -38,6 +38,7 @@ dependencies:
   google_generative_ai: ^0.2.2
   lottie: ^3.1.0
   chat_bubbles: ^1.6.0
+  flutter_markdown: ^0.6.22
 
 dev_dependencies:
   flutter_test:
