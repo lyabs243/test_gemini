@@ -1,7 +1,6 @@
-import 'dart:math';
-
 import 'package:chat_bubbles/bubbles/bubble_special_three.dart';
 import 'package:flutter/material.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:lottie/lottie.dart';
 
 class MultiTurnConversation extends StatefulWidget {
@@ -14,14 +13,35 @@ class MultiTurnConversation extends StatefulWidget {
 
 class MultiTurnConversationState extends State<MultiTurnConversation> {
 
-  String input = '';
-  String output = '';
-  bool loading = true;
+  bool loading = false;
+  List<MessageItem> messages = [];
+  late final ChatSession chat;
+  final TextEditingController controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    const apiKey = String.fromEnvironment('API_KEY', defaultValue: '');
+    final model = GenerativeModel(
+      model: 'gemini-pro',
+      apiKey: apiKey,
+      generationConfig: GenerationConfig(maxOutputTokens: 100)
+    );
+
+    messages = [
+      MessageItem('Hello how can I help you?', false),
+      MessageItem('Hello,', true),
+    ];
+
+    chat = model.startChat(
+      history: List.generate(messages.reversed.length, (index) => messages.reversed.toList()[index].content),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
 
-    int totalMessages = 20;
+    int totalMessages = messages.length;
     if (loading) {
       totalMessages++;
     }
@@ -50,8 +70,8 @@ class MultiTurnConversationState extends State<MultiTurnConversation> {
                   }
 
                   return getBubble(
-                    'Hello world $messageIndex' * 3,
-                    Random().nextBool(),
+                    messages[messageIndex].text,
+                    messages[messageIndex].isSender,
                   );
                 },
               ),
@@ -60,6 +80,7 @@ class MultiTurnConversationState extends State<MultiTurnConversation> {
               children: [
                 Expanded(
                   child: TextField(
+                    controller: controller,
                     decoration: InputDecoration(
                       hintText: 'Type your message here',
                       fillColor: Colors.grey[200],
@@ -69,15 +90,12 @@ class MultiTurnConversationState extends State<MultiTurnConversation> {
                         borderSide: BorderSide.none,
                       ),
                     ),
-                    onChanged: (value) {
-                      input = value;
-                    },
                   ),
                 ),
                 const SizedBox(width: 5,),
                 ElevatedButton(
                   onPressed: () {
-                    // send message
+                    send(controller.text);
                   },
                   child: Icon(
                     Icons.send,
@@ -90,6 +108,33 @@ class MultiTurnConversationState extends State<MultiTurnConversation> {
         ),
       ),
     );
+  }
+
+  send(String input) async {
+    if (loading) {
+      return;
+    }
+
+    controller.clear();
+    setState(() {
+      loading = true;
+    });
+
+    MessageItem newMessage = MessageItem(input, true);
+
+    setState(() {
+      messages.insert(0, MessageItem(input, true));
+    });
+
+    final response = await chat.sendMessage(newMessage.content);
+
+    if (response.text?.isNotEmpty?? false) {
+      messages.insert(0, MessageItem(response.text!, false));
+    }
+
+    setState(() {
+      loading = false;
+    });
   }
 
   Widget getBubble(String text, bool isSender,) {
@@ -120,6 +165,22 @@ class MultiTurnConversationState extends State<MultiTurnConversation> {
         height: 80,
       ),
     );
+  }
+
+}
+
+class MessageItem {
+
+  final String text;
+  final bool isSender;
+
+  MessageItem(this.text, this.isSender);
+
+  Content get content {
+    if (isSender) {
+      return Content.text(text,);
+    }
+    return Content.model([TextPart(text)]);
   }
 
 }

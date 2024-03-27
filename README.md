@@ -54,7 +54,7 @@ Your file should look like this:
 
 ### Build multi-turn conversations (chat)
 
-In progress...
+![Chat](./screenshots/gemini-multi-turn-conversation-en.gif)
 
 ### Use streaming for faster interactions
 
