@@ -58,4 +58,4 @@ Your file should look like this:
 
 ### Use streaming for faster interactions
 
-In progress...
+![Streaming](./screenshots/gemini-streaming-responses-en.gif)
