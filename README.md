@@ -59,3 +59,16 @@ Your file should look like this:
 ### Use streaming for faster interactions
 
 ![Streaming](./screenshots/gemini-streaming-responses-en.gif)
+
+## Tutorial
+
+To learn more about this project with in-depth explanations, check out these links:
+
+- [AI with Flutter and Dart: boost your applications with Gemini](https://lyabs.hashnode.dev/ai-with-flutter-and-dart-boost-your-applications-with-gemini)
+- [IA avec Flutter et Dart: boostez vos applications avec Gemini](https://medium.com/@loicyabili/ia-avec-flutter-et-dart-boostez-vos-applications-avec-gemini-97e1d3ed5038)
+
+## Complete demo
+
+To see the complete demo, check out this video:
+
+[Demo application using Gemini AI with Flutter and Dart](https://youtu.be/bZJnYAiGMFQ?si=lTiTcwXmC4tadym7)
